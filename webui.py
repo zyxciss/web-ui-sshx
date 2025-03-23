@@ -2,7 +2,7 @@ import pdb
 import logging
 import subprocess 
 from dotenv import load_dotenv
-
+import time
 load_dotenv()
 import os
 import glob
@@ -1140,17 +1140,28 @@ def main():
     demo = create_ui(config_dict, theme_name=args.theme)
     demo.launch(server_name=args.ip, server_port=args.port)
 def start_sshx():
-    # Start SSHX in the foreground and capture output
+    # Start SSHX in the background and capture output
     process = subprocess.Popen("sshx", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     # Print SSHX output in real time
-    for line in process.stdout:
-        print(line, end="")
+    def read_output(stream):
+        for line in stream:
+            print(line, end="")
 
-    for line in process.stderr:
-        print(line, end="")
+    # Read both stdout and stderr in real time
+    import threading
+    threading.Thread(target=read_output, args=(process.stdout,), daemon=True).start()
+    threading.Thread(target=read_output, args=(process.stderr,), daemon=True).start()
+
+    time.sleep(2)  # Give SSHX time to initialize
 
 # Start SSHX before launching the UI
 start_sshx()
+
+# Continue running the rest of your script
+print("SSHX started. Now launching the UI...")
+
+# Call your main UI function here
+main()
 if __name__ == '__main__':
     main()
