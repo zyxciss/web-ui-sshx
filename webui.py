@@ -1140,8 +1140,15 @@ def main():
     demo = create_ui(config_dict, theme_name=args.theme)
     demo.launch(server_name=args.ip, server_port=args.port)
 def start_sshx():
-    # Start SSHX in the background
-    subprocess.Popen("sshx", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Start SSHX in the foreground and capture output
+    process = subprocess.Popen("sshx", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+    # Print SSHX output in real time
+    for line in process.stdout:
+        print(line, end="")
+
+    for line in process.stderr:
+        print(line, end="")
 
 # Start SSHX before launching the UI
 start_sshx()
