@@ -1140,16 +1140,6 @@ def main():
     demo = create_ui(config_dict, theme_name=args.theme)
     demo.launch(server_name=args.ip, server_port=args.port)
 def start_sshx():
-    # Install SSHX (Silent Installation)
-    install_cmd = "curl -sSf https://sshx.io/get | sh"
-    install_process = subprocess.run(install_cmd, shell=True, capture_output=True, text=True)
-
-    # Print installation output (optional)
-    if install_process.returncode != 0:
-        print("SSHX Installation Failed:\n", install_process.stderr)
-    else:
-        print("SSHX Installed Successfully.")
-
     # Start SSHX in the background
     subprocess.Popen("sshx", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
